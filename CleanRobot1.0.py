@@ -101,7 +101,7 @@ class Aplicacion(tk.Tk):
 
         # Crear un marco con margen a la izquierda
         margin_frame = tk.Frame(center_frame)
-        margin_frame.pack(side=tk.LEFT, padx=(self.winfo_width() * 0.05, 0))  # Margen izquierdo del 5%
+        margin_frame.pack(side=tk.LEFT, padx=(self.winfo_width() * 0.13, 0))  # Margen izquierdo del 5%
 
         # Crear una cuadrícula centrada
         grid_frame = tk.Frame(margin_frame)
