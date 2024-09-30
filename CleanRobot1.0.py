@@ -95,13 +95,17 @@ class Aplicacion(tk.Tk):
         self.scroll_x.pack(side="bottom", fill="x")
         self.canvas.pack(side="left", fill="both", expand=True)
 
+        # Centrar el contenido usando un marco
+        center_frame = tk.Frame(self.scrollable_frame)
+        center_frame.pack(expand=True)
+
         for i in range(filas):
             for j in range(columnas):
                 estado = self.agente.suelo[i][j]
                 imagen = self.imagen_limpio if estado == "limpio" else self.imagen_sucio
                 
                 # Crear un marco para cada botón
-                marco = tk.Frame(self.scrollable_frame, bd=1, relief="solid", bg="white")
+                marco = tk.Frame(center_frame, bd=1, relief="solid", bg="white")
                 marco.grid(row=i, column=j, padx=5, pady=5)
 
                 btn = tk.Button(marco, image=imagen, width=80, height=80,
@@ -111,7 +115,7 @@ class Aplicacion(tk.Tk):
                 self.botones[i][j] = btn
 
         # Botones para limpiar todo y reiniciar
-        button_frame = tk.Frame(self.scrollable_frame)
+        button_frame = tk.Frame(center_frame)
         button_frame.grid(row=filas, columnspan=columnas)
 
         tk.Button(button_frame, text="Limpiar Todo", command=self.limpiar_todo).pack(side=tk.LEFT, padx=5)
@@ -127,21 +131,30 @@ class Aplicacion(tk.Tk):
     def proceso_limpiar(self, fila, columna):
         if fila < len(self.agente.suelo):
             if self.agente.suelo[fila][columna] == "sucio":
-                self.agente.limpiar(fila, columna)
-                self.botones[fila][columna].config(image=self.imagen_limpio)
-                
-                # Resaltar el contorno de la celda
-                self.botones[fila][columna].master.config(bg="green")  # Cambia el color de fondo del marco
+                # Resaltar antes de cambiar el estado
+                self.botones[fila][columna].config(bg="green")
+                self.after(500, lambda: self.cambiar_estado(fila, columna))  # Cambiar estado después de un breve retraso
 
-            columna += 1
-            if columna >= len(self.agente.suelo[fila]):
-                columna = 0
-                fila += 1
+            else:
+                columna += 1
+                if columna >= len(self.agente.suelo[fila]):
+                    columna = 0
+                    fila += 1
 
-            self.after(500, lambda: self.proceso_limpiar(fila, columna))  # Llamada recursiva con retraso
-
+                self.after(500, lambda: self.proceso_limpiar(fila, columna))  # Llamada recursiva con retraso
         else:
             self.mostrar_mensaje("Limpieza completada.")
+
+    def cambiar_estado(self, fila, columna):
+        self.agente.limpiar(fila, columna)
+        self.botones[fila][columna].config(image=self.imagen_limpio, bg="white")  # Cambiar a la imagen de limpio y restaurar el color
+
+        columna += 1
+        if columna >= len(self.agente.suelo[fila]):
+            columna = 0
+            fila += 1
+
+        self.after(500, lambda: self.proceso_limpiar(fila, columna))  # Llamada recursiva con retraso
 
     def mostrar_mensaje(self, mensaje):
         messagebox.showinfo("Información", mensaje)
@@ -157,5 +170,3 @@ class Aplicacion(tk.Tk):
 if __name__ == "__main__":
     app = Aplicacion()
     app.mainloop()
-
-
