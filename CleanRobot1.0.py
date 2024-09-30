@@ -101,7 +101,7 @@ class Aplicacion(tk.Tk):
 
         # Crear un marco con margen a la izquierda
         margin_frame = tk.Frame(center_frame)
-        margin_frame.pack(side=tk.LEFT, padx=(self.winfo_width() * 0.13, 0))  # Margen izquierdo del 5%
+        margin_frame.pack(side=tk.LEFT, padx=(self.winfo_width() * 0.12, 0))  # Margen izquierdo del 5%
 
         # Crear una cuadrícula centrada
         grid_frame = tk.Frame(margin_frame)
@@ -139,17 +139,15 @@ class Aplicacion(tk.Tk):
     def proceso_limpiar(self, fila, columna):
         if fila < len(self.agente.suelo):
             if self.agente.suelo[fila][columna] == "sucio":
-                # Resaltar antes de cambiar el estado
+                # Resaltar antes de cambiar el estado a verde
                 self.botones[fila][columna].config(bg="green")
                 self.after(500, lambda: self.cambiar_estado(fila, columna))  # Cambiar estado después de un breve retraso
 
-            else:
-                columna += 1
-                if columna >= len(self.agente.suelo[fila]):
-                    columna = 0
-                    fila += 1
+            elif self.agente.suelo[fila][columna] == "limpio":
+                # Resaltar antes de cambiar el estado a rojo
+                self.botones[fila][columna].config(bg="red")
+                self.after(500, lambda: self.restaurar_color(fila, columna))  # Restaurar color después de un breve retraso
 
-                self.after(500, lambda: self.proceso_limpiar(fila, columna))  # Llamada recursiva con retraso
         else:
             self.mostrar_mensaje("Limpieza completada.")
 
@@ -157,6 +155,18 @@ class Aplicacion(tk.Tk):
         self.agente.limpiar(fila, columna)
         self.botones[fila][columna].config(image=self.imagen_limpio, bg="white")  # Cambiar a la imagen de limpio y restaurar el color
 
+        columna += 1
+        if columna >= len(self.agente.suelo[fila]):
+            columna = 0
+            fila += 1
+
+        self.after(500, lambda: self.proceso_limpiar(fila, columna))  # Llamada recursiva con retraso
+
+    def restaurar_color(self, fila, columna):
+        # Restaurar el color original
+        self.botones[fila][columna].config(bg="white")
+
+        # Continuar al siguiente
         columna += 1
         if columna >= len(self.agente.suelo[fila]):
             columna = 0
@@ -178,5 +188,3 @@ class Aplicacion(tk.Tk):
 if __name__ == "__main__":
     app = Aplicacion()
     app.mainloop()
-
-
