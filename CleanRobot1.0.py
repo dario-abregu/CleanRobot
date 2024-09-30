@@ -95,9 +95,17 @@ class Aplicacion(tk.Tk):
         self.scroll_x.pack(side="bottom", fill="x")
         self.canvas.pack(side="left", fill="both", expand=True)
 
-        # Centrar el contenido usando un marco
+        # Marco para centrar el contenido con margen a la izquierda
         center_frame = tk.Frame(self.scrollable_frame)
         center_frame.pack(expand=True)
+
+        # Crear un marco con margen a la izquierda
+        margin_frame = tk.Frame(center_frame)
+        margin_frame.pack(side=tk.LEFT, padx=(self.winfo_width() * 0.05, 0))  # Margen izquierdo del 5%
+
+        # Crear una cuadrícula centrada
+        grid_frame = tk.Frame(margin_frame)
+        grid_frame.pack()
 
         for i in range(filas):
             for j in range(columnas):
@@ -105,7 +113,7 @@ class Aplicacion(tk.Tk):
                 imagen = self.imagen_limpio if estado == "limpio" else self.imagen_sucio
                 
                 # Crear un marco para cada botón
-                marco = tk.Frame(center_frame, bd=1, relief="solid", bg="white")
+                marco = tk.Frame(grid_frame, bd=1, relief="solid", bg="white")
                 marco.grid(row=i, column=j, padx=5, pady=5)
 
                 btn = tk.Button(marco, image=imagen, width=80, height=80,
@@ -115,8 +123,8 @@ class Aplicacion(tk.Tk):
                 self.botones[i][j] = btn
 
         # Botones para limpiar todo y reiniciar
-        button_frame = tk.Frame(center_frame)
-        button_frame.grid(row=filas, columnspan=columnas)
+        button_frame = tk.Frame(margin_frame)
+        button_frame.pack(pady=10)
 
         tk.Button(button_frame, text="Limpiar Todo", command=self.limpiar_todo).pack(side=tk.LEFT, padx=5)
         tk.Button(button_frame, text="Reiniciar", command=self.reiniciar).pack(side=tk.LEFT, padx=5)
@@ -170,3 +178,5 @@ class Aplicacion(tk.Tk):
 if __name__ == "__main__":
     app = Aplicacion()
     app.mainloop()
+
+
