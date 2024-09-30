@@ -1,20 +1,31 @@
 import tkinter as tk
 from tkinter import messagebox
 import random
+from PIL import Image, ImageTk
+import requests
+from io import BytesIO
 
 class AgenteLimpiador:
     def __init__(self, filas, columnas):
-        self.suelo = [[random.choice(["Sucio", "Limpio"]) for _ in range(columnas)] for _ in range(filas)]
+        self.suelo = [[random.choice(["sucio", "limpio"]) for _ in range(columnas)] for _ in range(filas)]
 
     def limpiar(self, fila, columna):
-        self.suelo[fila][columna] = "Limpio"
+        self.suelo[fila][columna] = "limpio"
 
 class Aplicacion(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Agente Limpiador")
-        self.geometry("400x400")
+        self.geometry("600x600")
         self.crear_ventana_ingreso()
+        self.imagen_limpio = self.cargar_imagen("https://static.vecteezy.com/system/resources/thumbnails/038/780/795/small/ai-generated-wet-cleaning-of-the-floor-using-a-mop-concept-of-cleaning-housework-generated-by-artificial-intelligence-photo.jpg")
+        self.imagen_sucio = self.cargar_imagen("https://www.shutterstock.com/image-photo/mud-stain-on-wooden-floor-600nw-2512184845.jpg")
+
+    def cargar_imagen(self, url):
+        response = requests.get(url)
+        img_data = Image.open(BytesIO(response.content))
+        img_data = img_data.resize((80, 80), Image.LANCZOS)  # Cambia el tamaño de la imagen
+        return ImageTk.PhotoImage(img_data)
 
     def crear_ventana_ingreso(self):
         self.filas_label = tk.Label(self, text="Ingrese la cantidad de filas (máx. 12):")
@@ -62,19 +73,45 @@ class Aplicacion(tk.Tk):
         for widget in self.winfo_children():
             widget.destroy()
 
-        self.grid_frame = tk.Frame(self)
-        self.grid_frame.pack()
+        # Crear un canvas para permitir scroll
+        self.canvas = tk.Canvas(self)
+        self.scroll_y = tk.Scrollbar(self, orient="vertical", command=self.canvas.yview)
+        self.scroll_x = tk.Scrollbar(self, orient="horizontal", command=self.canvas.xview)
+
+        self.scrollable_frame = tk.Frame(self.canvas)
+
+        self.scrollable_frame.bind(
+            "<Configure>",
+            lambda e: self.canvas.configure(
+                scrollregion=self.canvas.bbox("all")
+            )
+        )
+
+        self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
+
+        self.canvas.configure(yscrollcommand=self.scroll_y.set, xscrollcommand=self.scroll_x.set)
+
+        self.scroll_y.pack(side="right", fill="y")
+        self.scroll_x.pack(side="bottom", fill="x")
+        self.canvas.pack(side="left", fill="both", expand=True)
 
         for i in range(filas):
             for j in range(columnas):
                 estado = self.agente.suelo[i][j]
-                btn = tk.Button(self.grid_frame, text=estado.capitalize(), width=10, height=3,
+                imagen = self.imagen_limpio if estado == "limpio" else self.imagen_sucio
+                
+                # Crear un marco para cada botón
+                marco = tk.Frame(self.scrollable_frame, bd=1, relief="solid", bg="white")
+                marco.grid(row=i, column=j, padx=5, pady=5)
+
+                btn = tk.Button(marco, image=imagen, width=80, height=80,
                                 command=lambda fila=i, columna=j: self.limpiar_celda(fila, columna))
-                btn.grid(row=i, column=j)
+                btn.pack()
+
                 self.botones[i][j] = btn
 
         # Botones para limpiar todo y reiniciar
-        button_frame = tk.Frame(self.grid_frame)
+        button_frame = tk.Frame(self.scrollable_frame)
         button_frame.grid(row=filas, columnspan=columnas)
 
         tk.Button(button_frame, text="Limpiar Todo", command=self.limpiar_todo).pack(side=tk.LEFT, padx=5)
@@ -82,7 +119,7 @@ class Aplicacion(tk.Tk):
 
     def limpiar_celda(self, fila, columna):
         self.agente.limpiar(fila, columna)
-        self.botones[fila][columna].config(text="Limpio", bg="lightgreen")
+        self.botones[fila][columna].config(image=self.imagen_limpio)
 
     def limpiar_todo(self):
         self.proceso_limpiar(0, 0)
@@ -91,7 +128,10 @@ class Aplicacion(tk.Tk):
         if fila < len(self.agente.suelo):
             if self.agente.suelo[fila][columna] == "sucio":
                 self.agente.limpiar(fila, columna)
-                self.botones[fila][columna].config(text="Limpio", bg="lightgreen")
+                self.botones[fila][columna].config(image=self.imagen_limpio)
+                
+                # Resaltar el contorno de la celda
+                self.botones[fila][columna].master.config(bg="green")  # Cambia el color de fondo del marco
 
             columna += 1
             if columna >= len(self.agente.suelo[fila]):
