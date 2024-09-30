@@ -54,6 +54,15 @@ El código se estructura de la siguiente manera:
 - Pillow (para manejar imágenes desde URLs)
 - Requests (para obtener imágenes desde URLs)
 
+## Instalación Necesaria
+
+Para poder ejecutar la aplicacion necesitas install los siguiente:
+
+```bash
+pip install Pillow requests
+```
+
+
 ## Ejecución
 
 Para ejecutar la aplicación, utiliza el siguiente comando en la terminal:
