@@ -4,10 +4,10 @@ import random
 
 class AgenteLimpiador:
     def __init__(self, filas, columnas):
-        self.suelo = [[random.choice(["sucio", "limpio"]) for _ in range(columnas)] for _ in range(filas)]
+        self.suelo = [[random.choice(["Sucio", "Limpio"]) for _ in range(columnas)] for _ in range(filas)]
 
     def limpiar(self, fila, columna):
-        self.suelo[fila][columna] = "limpio"
+        self.suelo[fila][columna] = "Limpio"
 
 class Aplicacion(tk.Tk):
     def __init__(self):
