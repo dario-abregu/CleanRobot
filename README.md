@@ -2,22 +2,23 @@
 
 ## Descripción
 
-Este proyecto es una simulación de un agente limpiador utilizando Python y la biblioteca Tkinter para crear una interfaz gráfica. El agente puede limpiar un área definida por el usuario, representada como una matriz de celdas que pueden estar "sucias" o "limpias".
+Este proyecto es una simulación de un agente limpiador utilizando Python y la biblioteca Tkinter para crear una interfaz gráfica. El agente puede limpiar un área definida por el usuario, representada como una matriz de celdas que pueden estar "sucias" o "limpias". Además, se visualiza el proceso de limpieza con efectos de resaltado temporal.
 
 ## Características
 
 - **Interfaz Gráfica**: Desarrollada con Tkinter, permite a los usuarios ingresar el tamaño del suelo.
 - **Validaciones**: Asegura que el número de filas y columnas no supere las 12 y que sean enteros positivos.
-- **Proceso de Limpieza Visual**: El agente limpia celdas una por una, mostrando el proceso en tiempo real.
+- **Proceso de Limpieza Visual**: El agente limpia celdas una por una, mostrando el proceso en tiempo real con resaltado verde para celdas sucias y rojo para celdas limpias antes de cambiar su estado.
 - **Mensajes Informativos**: Notifica al usuario cuando la limpieza ha terminado o si el área ya estaba limpia.
 - **Reinicio de la Aplicación**: Permite reiniciar el proceso desde el principio sin cerrar la aplicación.
+- **Scroll**: La interfaz permite desplazamiento horizontal y vertical si el tamaño del suelo excede la ventana visible.
 
 ## Instrucciones de Uso
 
 1. Ejecuta el script en un entorno que soporte Python 3.
 2. Ingresa la cantidad de filas y columnas (máximo 12).
 3. Presiona el botón "Iniciar" para comenzar la simulación.
-4. Observa cómo el agente limpia el área, celda por celda.
+4. Observa cómo el agente limpia el área, celda por celda, con efectos visuales de resaltado.
 5. Una vez finalizada la limpieza, puedes reiniciar el proceso.
 
 ## Código Explicado
@@ -38,6 +39,7 @@ El código se estructura de la siguiente manera:
 
 - **Método `crear_interfaz`**:
   - Crea botones para cada celda del suelo, y muestra los botones para limpiar todo y reiniciar.
+  - Implementa un canvas para permitir scroll horizontal y vertical.
 
 - **Método `limpiar_todo`**:
   - Inicia el proceso de limpieza llamando a `proceso_limpiar`, que recorre cada celda, limpiando una por una con un retraso entre ellas para mostrar el progreso.
@@ -49,10 +51,12 @@ El código se estructura de la siguiente manera:
 
 - Python 3.x
 - Tkinter (incluido en la mayoría de las instalaciones de Python)
+- Pillow (para manejar imágenes desde URLs)
+- Requests (para obtener imágenes desde URLs)
 
 ## Ejecución
 
 Para ejecutar la aplicación, utiliza el siguiente comando en la terminal:
 
 ```bash
-python nombre_del_script.py
+python CleanRobot1.0.py
